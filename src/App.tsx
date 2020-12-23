@@ -22,7 +22,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import * as _ from "lodash";
 import { createMuiTheme } from "@material-ui/core/styles";
-import InputAdornment from '@material-ui/core/InputAdornment';
+import InputAdornment from "@material-ui/core/InputAdornment";
 import { lime, indigo } from "@material-ui/core/colors";
 import {
   Field,
@@ -100,13 +100,14 @@ const validationSchema = yup.object().shape({
   peel: yup.string().required("Necessario"),
   gradiation: yup
     .number()
-    .min(1, "Inserisci una percentuale").max(96, 'Inserisci una percentuale'),
+    .min(1, "Inserisci una percentuale")
+    .max(96, "Inserisci una percentuale"),
 });
 
 const Form = () => {
   const onSubmit = (values: FormValues) => {
     console.log(values);
-    console.log(calculate(values))
+    console.log(calculate(values));
   };
 
   const classes = useStyles();
@@ -115,7 +116,7 @@ const Form = () => {
     <Formik
       initialValues={{
         peel: "120",
-        gradiation: "35"
+        gradiation: "35",
       }}
       validationSchema={validationSchema}
       onSubmit={(
@@ -144,6 +145,11 @@ const LemonForm = () => {
     setCalculation(calculate(values));
   }, [values]);
   const classes = useStyles();
+  const showResults =
+    calculation &&
+    calculation.totalWeight &&
+    calculation.totalWeight > 0 &&
+    isValid;
   return (
     <>
       <Container component="main" maxWidth="sm" className={classes.container}>
@@ -169,9 +175,11 @@ const LemonForm = () => {
                 value={values?.peel}
                 onChange={handleChange}
                 component={Input}
-                     InputProps={{
-            endAdornment: <InputAdornment position="end">gr</InputAdornment>,
-          }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">gr</InputAdornment>
+                  ),
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -184,17 +192,23 @@ const LemonForm = () => {
                 value={values?.gradiation}
                 onChange={handleChange}
                 component={Input}
-                  InputProps={{
-            endAdornment: <InputAdornment position="end">%</InputAdornment>,
-          }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">%</InputAdornment>
+                  ),
+                }}
               />
-            </Grid>  </Grid>
+            </Grid>
+          </Grid>
         </form>
         {calculation &&
           calculation.totalWeight &&
           calculation.totalWeight > 0 &&
           isValid && (
-            <Results alcol={calculation.alcol} totalWeight={calculation.totalWeight} />
+            <Results
+              alcol={calculation.alcol}
+              totalWeight={calculation.totalWeight}
+            />
           )}
       </Container>
     </>
@@ -265,46 +279,42 @@ const Results: FC<Calculation> = (props) => {
       ...getFromSugar(props.totalWeight, i),
     };
   });
-  return (<div>
-      <Grid
-            container
-            spacing={2}
-            justify="space-around"
-            alignItems="center"
-          >
-            <Grid item xs={12} sm={6}>
-            <Field
-              fullWidth
-              variant="outlined"
-              id="alcolMl"
-              label="Alcol (ml)"
-              name="alcolMl"
-              defaultValue={props.alcol}
-              value={props.alcol}
-              component={Input}
-               InputProps={{
-            readOnly: true,
-            endAdornment: <InputAdornment position="end">ml</InputAdornment>,
-          }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Field
-              variant="outlined"
-              fullWidth
-              id="alcolGr"
-              label="Alcol (gr)"
-              name="alcolGr"
-              defaultValue={Math.round(props.alcol * 0.78945)}
-              value={Math.round(props.alcol * 0.78945)}
-              component={Input}
-               InputProps={{
-            readOnly: true,
+  return (
+    <div>
+      <Grid container spacing={2} justify="space-around" alignItems="center">
+        <Grid item xs={12} sm={6}>
+          <Field
+            fullWidth
+            variant="outlined"
+            id="alcolMl"
+            label="Alcol (ml)"
+            name="alcolMl"
+            defaultValue={props.alcol}
+            value={props.alcol}
+            component={Input}
+            InputProps={{
+              readOnly: true,
+              endAdornment: <InputAdornment position="end">ml</InputAdornment>,
+            }}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Field
+            variant="outlined"
+            fullWidth
+            id="alcolGr"
+            label="Alcol (gr)"
+            name="alcolGr"
+            defaultValue={Math.round(props.alcol * 0.78945)}
+            value={Math.round(props.alcol * 0.78945)}
+            component={Input}
+            InputProps={{
+              readOnly: true,
               endAdornment: <InputAdornment position="end">gr</InputAdornment>,
-          }}
-            />
-          </Grid>
-          </Grid>
+            }}
+          />
+        </Grid>
+      </Grid>
       <Table size="small">
         <TableHead>
           <TableRow>
@@ -322,7 +332,8 @@ const Results: FC<Calculation> = (props) => {
             </TableRow>
           ))}
         </TableBody>
-      </Table></div>
+      </Table>
+    </div>
   );
 };
 
