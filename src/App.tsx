@@ -1,19 +1,10 @@
 import React, { FC, useEffect, useState } from "react";
 import "./App.css";
-import {
-  makeStyles,
-  ThemeProvider,
-  withStyles,
-} from "@material-ui/core/styles";
+import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField, { TextFieldProps } from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -29,12 +20,10 @@ import {
   FieldProps,
   Formik,
   FormikHelpers,
-  FormikProps,
   getIn,
   useFormikContext,
 } from "formik";
 import * as yup from "yup";
-import { mapValues } from "lodash";
 
 const theme = createMuiTheme({
   palette: {
@@ -105,12 +94,7 @@ const validationSchema = yup.object().shape({
 });
 
 const Form = () => {
-  const onSubmit = (values: FormValues) => {
-    console.log(values);
-    console.log(calculate(values));
-  };
-
-  const classes = useStyles();
+  const onSubmit = (values: FormValues) => {};
 
   return (
     <Formik
@@ -136,20 +120,13 @@ const LemonForm = () => {
   const {
     values,
     handleChange,
-    errors,
-    isValid, // will work with validation schema or validate fn defined
+    isValid,
   } = useFormikContext<FormValues>();
   const [calculation, setCalculation] = useState<Calculation>();
   useEffect(() => {
-    const newVals = calculate(values);
     setCalculation(calculate(values));
   }, [values]);
   const classes = useStyles();
-  const showResults =
-    calculation &&
-    calculation.totalWeight &&
-    calculation.totalWeight > 0 &&
-    isValid;
   return (
     <>
       <Container component="main" maxWidth="sm" className={classes.container}>
@@ -228,7 +205,6 @@ const calculate = (values: FormValues): Calculation => {
   let { peel: Peel, gradiation: Gradiation } = values;
   let peel = Number(Peel);
   let gradiation = Number(Gradiation);
-  console.log(peel, gradiation);
   if (!gradiation || !peel || gradiation === 0 || peel === 0) {
     return {
       alcol: 0,
@@ -257,18 +233,7 @@ const calculate = (values: FormValues): Calculation => {
   };
 };
 
-interface IResult {
-  totalWeight: number;
-  values: FormValues;
-}
-
-interface ResultsRow {
-  sugar: number;
-  water: number;
-}
-
 const Results: FC<Calculation> = (props) => {
-  const classes = useStyles();
 
   const amounts: { key: number; sugar: number; water: number }[] = _.range(
     18,
