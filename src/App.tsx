@@ -1,67 +1,143 @@
-import React, { FC, useEffect, useState } from "react";
-import "./App.css";
-import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField, { TextFieldProps } from "@material-ui/core/TextField";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import * as _ from "lodash";
-import { createMuiTheme } from "@material-ui/core/styles";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import { lime, indigo } from "@material-ui/core/colors";
+import './App.css';
+
+import * as yup from 'yup';
+
 import {
-  Field,
-  FieldProps,
-  Formik,
-  FormikHelpers,
-  getIn,
-  useFormikContext,
-} from "formik";
-import * as yup from "yup";
+    Card,
+    CardContent,
+    Container,
+    CssBaseline,
+    Grid,
+    InputAdornment,
+    Link,
+    List,
+    ListItem,
+    Typography
+} from '@material-ui/core';
+import { Field, FieldProps, Formik, FormikHelpers, getIn, useFormikContext } from 'formik';
+import { Help, HelpOutline } from '@material-ui/icons';
+import React, { FC, useEffect, useState } from 'react';
+import TextField, { TextFieldProps } from '@material-ui/core/TextField';
+import { ThemeProvider, createMuiTheme, makeStyles } from '@material-ui/core/styles';
+
+import clsx from 'clsx';
+import parse from 'html-react-parser';
+
+// import * as _ from "lodash";
 
 const theme = createMuiTheme({
   palette: {
-    primary: indigo,
-    secondary: lime,
+    primary: { main: '#1a237e' },
+    text: {
+      primary: '#1a237e',
+    },
   },
 });
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    margin: "auto",
-    flexGrow: 1,
-    padding: "24px",
-  },
-
   form: {
-    width: "100%", // Fix IE 11 issue.
+    width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(3),
   },
   container: {
-    padding: "24px",
+    padding: '24px',
+    maxWidth: '700px',
+    color: '#1a237e',
+    [theme.breakpoints.up('sm')]: {
+      marginTop: '50px',
+    },
   },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-    width: "50%",
+  table: {
+    marginTop: '20px',
+  },
+  inputLabel: {
+    color: theme.palette.primary.main,
+  },
+  cardLabel: {
+    fontSize: '14px',
+  },
+  cardRoot: {
+    background: 'transparent !important',
+    padding: '-2px -2px 0px',
+  },
+  cardValue: {
+    fontSize: '18px',
+  },
+  cardValueWithUnit: {
+    fontSize: '18px',
+    display: 'table-cell',
+    textAlign: 'left',
+    width: '50%',
+    paddingRight: '10px',
+  },
+  cardUnit: {
+    fontSize: '16px',
+    display: 'table-cell',
+    textAlign: 'right',
+    width: '50%',
+    paddingLeft: '10px',
+  },
+  cardTable: {
+    display: 'table',
+    width: '100%',
+  },
+  cardTable2: {
+    display: 'inline-table',
+    textAlign: 'left',
+    width: '50%',
+  },
+  cardTable0: {
+    paddingRight: '7px',
+    borderRight: `1.5px solid ${theme.palette.info.dark}`,
+  },
+  cardTable1: {
+    paddingLeft: '7px',
+  },
+  link: {
+    color: theme.palette.info.dark,
+  },
+  introTitle: {
+    marginBottom: '15px',
+    color: theme.palette.primary.dark,
+  },
+  introListItem: {},
+  introStepsTitle: {
+    marginBottom: '15px',
+    marginTop: '15px',
+    background: 'transparent !important',
+    color: theme.palette.primary.dark,
+    border: 'none',
+    outline: 'none',
+    boxShadow: 'none',
+    '&:hover': {
+      color: theme.palette.info.dark,
+    },
+  },
+  intoHelpIcon: {
+    '&:hover': {
+      color: theme.palette.info.dark,
+    },
+  },
+  introSubtitle: {
+    paddingLeft: '10px',
+    marginBottom: '15px',
+  },
+  gridPadding: {
+    marginTop: '10px',
+    marginBottom: '10px',
   },
 }));
+
+const Step: FC<{ text: string }> = (props) => {
+  return <ListItem style={{ fontSize: '16px' }}>{parse(props.text)}</ListItem>;
+};
 
 const Input: FC<FieldProps & TextFieldProps> = (props) => {
   const isTouched = getIn(props.form.touched, props.field.name);
   const errorMessage = getIn(props.form.errors, props.field.name);
-
+  const classes = useStyles();
   const { error, helperText, field, form, ...rest } = props;
-
   return (
     <TextField
       variant="outlined"
@@ -71,13 +147,19 @@ const Input: FC<FieldProps & TextFieldProps> = (props) => {
       }
       {...rest}
       {...field}
+      InputLabelProps={{
+        classes: {
+          root: classes.inputLabel,
+        },
+      }}
     />
   );
 };
 
 interface FormValues {
-  peel: string;
-  gradiation: string;
+  peel: number;
+  gradiation: number;
+  sugarPerc: number;
 }
 
 interface Calculation {
@@ -86,26 +168,30 @@ interface Calculation {
 }
 
 const validationSchema = yup.object().shape({
-  peel: yup.string().required("Necessario"),
+  peel: yup.string().required('Necessario'),
   gradiation: yup
     .number()
-    .min(1, "Inserisci una percentuale")
-    .max(96, "Inserisci una percentuale"),
+    .min(1, 'Inserisci una percentuale')
+    .max(96, 'Inserisci una percentuale'),
+  sugarPerc: yup
+    .number()
+    .min(1, 'Inserisci una percentuale tra 1 e 60')
+    .max(60, 'Inserisci una percentuale tra 1 e 60'),
 });
 
-const Form = () => {
+const App = () => {
   const onSubmit = (values: FormValues) => {};
-
   return (
     <Formik
       initialValues={{
-        peel: "120",
-        gradiation: "35",
+        peel: 120,
+        gradiation: 35,
+        sugarPerc: 23,
       }}
       validationSchema={validationSchema}
       onSubmit={(
         values: FormValues,
-        formikHelpers: FormikHelpers<FormValues>
+        formikHelpers: FormikHelpers<FormValues>,
       ) => {
         onSubmit(values);
         formikHelpers.setSubmitting(false);
@@ -116,78 +202,324 @@ const Form = () => {
   );
 };
 
+interface IRequirementCard {
+  label: string;
+  value: number[];
+  unit?: string[];
+}
+
+interface IRequirementCardContent {
+  value: number;
+  unit: string;
+}
+
+const RequirementCardContent: FC<IRequirementCardContent> = (props) => {
+  const classes = useStyles();
+  const { value, unit } = props;
+  return (
+    <div className={classes.cardTable}>
+      <Typography className={classes.cardValueWithUnit} variant="h3">
+        {value}
+      </Typography>
+      <Typography
+        className={classes.cardUnit}
+        classes={{
+          root:
+            'MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary',
+        }}
+      >
+        {unit}
+      </Typography>
+    </div>
+  );
+};
+
+const RequirementCard: FC<IRequirementCard> = (props) => {
+  const classes = useStyles();
+  const { label, value, unit } = props;
+  return (
+    <Card variant="outlined" className={classes.cardRoot}>
+      <CardContent>
+        {label && (
+          <Typography
+            className={classes.cardLabel}
+            variant="subtitle1"
+            gutterBottom
+          >
+            {label}
+          </Typography>
+        )}
+        {value.length === 1 && unit ? (
+          <RequirementCardContent value={value[0]} unit={unit[0]} />
+        ) : value.length === 2 && unit ? (
+          value.map((v, key) => (
+            <div
+              className={clsx(
+                classes.cardTable2,
+                key === 0 ? classes.cardTable0 : classes.cardTable1,
+              )}
+            >
+              <RequirementCardContent value={v} unit={unit[key]} />
+            </div>
+          ))
+        ) : (
+          value && (
+            <Typography className={classes.cardValue} variant="h3">
+              {value}
+            </Typography>
+          )
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+interface IRequirements {
+  water: number;
+  sugar: number;
+  alcol: number;
+}
+
 const LemonForm = () => {
-  const {
-    values,
-    handleChange,
-    isValid,
-  } = useFormikContext<FormValues>();
+  const { values, handleChange, isValid } = useFormikContext<FormValues>();
   const [calculation, setCalculation] = useState<Calculation>();
+  const [requirements, setRequirements] = useState<IRequirements>();
+  const [open, setOpen] = useState(false);
+
+  const handleClick = () => {
+    setOpen(!open);
+  };
+
+  const updateRequirements = (calc: Calculation, sugarPerc: number) => {
+    const { alcol, totalWeight } = calc;
+    const { water, sugar } = getFromSugar(totalWeight, sugarPerc);
+    setRequirements({
+      water,
+      sugar,
+      alcol,
+    });
+  };
   useEffect(() => {
-    setCalculation(calculate(values));
+    let calc = calculate({ peel: values.peel, gradiation: values.gradiation });
+    setCalculation(calc);
+    updateRequirements(calc, values.sugarPerc);
   }, [values]);
+
   const classes = useStyles();
   return (
     <>
-      <Container component="main" maxWidth="sm" className={classes.container}>
-        <CssBaseline />
-
-        <Typography component="h1" variant="h5">
-          LimonCalculator
-        </Typography>
-        <form noValidate className={classes.form}>
-          <Grid
-            container
-            spacing={2}
-            justify="space-around"
-            alignItems="center"
+      <ThemeProvider theme={theme}>
+        <Container component="main" maxWidth="sm" className={classes.container}>
+          <CssBaseline />
+          <Typography
+            component="h1"
+            variant="h4"
+            className={classes.introTitle}
           >
-            <Grid item xs={12} sm={6}>
-              <Field
-                name="peel"
-                required
-                fullWidth
-                id="peel"
-                label="🍋 Bucce"
-                value={values?.peel}
-                onChange={handleChange}
-                component={Input}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">gr</InputAdornment>
-                  ),
-                }}
+            LimonCalculator
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            color="primary"
+            display="block"
+            className={classes.introSubtitle}
+          >
+            Calcolatore per il Limoncello/ino Scientifico di{' '}
+            <Link
+              href="http://bressanini-lescienze.blogautore.espresso.repubblica.it/2015/12/21/le-ricette-scientifiche-il-limoncello-anche-veloce/comment-page-2/"
+              className={classes.link}
+            >
+              Bessarini
+            </Link>
+            .<br />
+            Idea nata da un thread di{' '}
+            <Link
+              href="https://www.reddit.com/r/italy/comments/ed993f/aggiornamento_del_foglio_calcolatore_per_il/?utm_source=share&utm_medium=web2x&context=3"
+              className={classes.link}
+            >
+              r/italy
+            </Link>
+            , più nello specifico da questo{' '}
+            <Link
+              href="https://www.reddit.com/r/italy/comments/ed993f/aggiornamento_del_foglio_calcolatore_per_il/fbj3mbr/?utm_source=reddit&utm_medium=web2x&context=3"
+              className={classes.link}
+            >
+              commento
+            </Link>
+            .
+          </Typography>
+          <div
+            style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}
+          >
+            <Typography
+              component="button"
+              variant="h5"
+              className={classes.introStepsTitle}
+              onClick={handleClick}
+            >
+              Spiegazione
+            </Typography>
+            {!open ? (
+              <Help
+                fontSize="small"
+                onClick={handleClick}
+                className={classes.intoHelpIcon}
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Field
-                required
-                fullWidth
-                id="gradiation"
-                label="Gradiazione"
-                name="gradiation"
-                value={values?.gradiation}
-                onChange={handleChange}
-                component={Input}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">%</InputAdornment>
-                  ),
-                }}
+            ) : (
+              <HelpOutline
+                fontSize="small"
+                onClick={handleClick}
+                className={classes.intoHelpIcon}
               />
-            </Grid>
-          </Grid>
-        </form>
-        {calculation &&
-          calculation.totalWeight &&
-          calculation.totalWeight > 0 &&
-          isValid && (
-            <Results
-              alcol={calculation.alcol}
-              totalWeight={calculation.totalWeight}
-            />
+            )}
+          </div>
+          {open && (
+            <Typography variant="body2" color="primary" display="block">
+              <List dense={true}>
+                {[
+                  'Strofinare i limoni con una spugna pulita',
+                  'Pelare i limoni con un pelapatate, rimuovendo con cura la parte bianca',
+                  'Inserire il peso delle bucce, la gradazione desiderata (in percentuale) e la percentuale di zucchero desiderato nei rispettivi campi',
+                ].map((v, key) => {
+                  return <Step text={v}></Step>;
+                })}
+              </List>
+            </Typography>
           )}
-      </Container>
+          <form noValidate className={classes.form}>
+            <Grid
+              container
+              spacing={2}
+              justify="space-around"
+              alignItems="center"
+            >
+              <Grid item xs={12} sm={4}>
+                <Field
+                  name="peel"
+                  required
+                  fullWidth
+                  id="peel"
+                  label="🍋 Bucce"
+                  value={values?.peel}
+                  onChange={handleChange}
+                  component={Input}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">gr</InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Field
+                  required
+                  fullWidth
+                  id="gradiation"
+                  label="🍸 Gradiazione desiderata"
+                  name="gradiation"
+                  value={values?.gradiation}
+                  onChange={handleChange}
+                  component={Input}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">%</InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Field
+                  required
+                  fullWidth
+                  id="sugarPerc"
+                  label="🍬 Zucchero desiderato"
+                  name="sugarPerc"
+                  value={values?.sugarPerc}
+                  onChange={handleChange}
+                  component={Input}
+                  InputProps={{
+                    type: 'number',
+                    endAdornment: (
+                      <InputAdornment position="end">%</InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </form>
+          {calculation &&
+            calculation.totalWeight &&
+            calculation.totalWeight > 0 &&
+            requirements &&
+            values &&
+            values.peel &&
+            values.gradiation &&
+            values.sugarPerc &&
+            isValid && (
+              <>
+                {open && (
+                  <Typography variant="body2" color="primary" display="block">
+                    <List dense={true}>
+                      {[
+                        "Mettere le bucce in macerazione al buio nell'alcol puro (la quantità da utilizzare è riportata qua sotto) per infusione per un periodo tra 1 e 3 giorni",
+                        'Agitare occasionalmente',
+                      ].map((v, key) => {
+                        return <Step text={v}></Step>;
+                      })}
+                    </List>
+                  </Typography>
+                )}
+                <Grid
+                  container
+                  spacing={2}
+                  justify="space-around"
+                  alignItems="center"
+                  className={classes.gridPadding}
+                >
+                  <Grid item xs={12} sm={4}>
+                    <RequirementCard
+                      label="Alcol necessario"
+                      value={[
+                        requirements.alcol,
+                        Math.round(requirements.alcol * 0.78945),
+                      ]}
+                      unit={['ml', 'gr']}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <RequirementCard
+                      label="Acqua necessaria"
+                      value={[requirements.water]}
+                      unit={['ml']}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <RequirementCard
+                      label="Zucchero necessario"
+                      value={[requirements.sugar]}
+                      unit={['gr']}
+                    />
+                  </Grid>
+                </Grid>
+                {open && (
+                  <Typography variant="body2" color="primary" display="block">
+                    <List dense={true}>
+                      {[
+                        "Una volta passato il periodo di infusione, preparare lo sciroppo di zucchero facendo scaldare l'acqua e unendoci lo zucchero nelle dosi riportate sopra",
+                        'Attendere che lo sciroppo raggiunga la temperatura ambiente',
+                        "Filtrare l'infusione rimuovendo tutte le bucce di 🍋",
+                        "Mescolare l'infusione con lo sciroppo di zucchero",
+                        'Imbottigliare e gustare il preparato, meglio se si attende ancora qualche giorno prima di provarlo',
+                      ].map((v, key) => {
+                        return <Step text={v}></Step>;
+                      })}
+                    </List>
+                  </Typography>
+                )}
+              </>
+            )}
+        </Container>
+      </ThemeProvider>
     </>
   );
 };
@@ -201,10 +533,8 @@ function getFromSugar(weight: number, sugarPercentage: number) {
   };
 }
 
-const calculate = (values: FormValues): Calculation => {
-  let { peel: Peel, gradiation: Gradiation } = values;
-  let peel = Number(Peel);
-  let gradiation = Number(Gradiation);
+const calculate = (values: Partial<FormValues>): Calculation => {
+  let { peel, gradiation } = values;
   if (!gradiation || !peel || gradiation === 0 || peel === 0) {
     return {
       alcol: 0,
@@ -226,88 +556,10 @@ const calculate = (values: FormValues): Calculation => {
   const alcolAfterGr = alcolAfterMl * alcolDensity;
   const sugarWaterMl = alcolAfterMl / gradiation - alcolAfterMl - waterAfterMl;
   const totalWeight = sugarWaterMl + waterAfterMl + alcolAfterGr;
-
   return {
     alcol: Math.round(alcol),
     totalWeight: Math.round(totalWeight),
   };
 };
-
-const Results: FC<Calculation> = (props) => {
-
-  const amounts: { key: number; sugar: number; water: number }[] = _.range(
-    18,
-    30
-  ).map((i: number, k: number) => {
-    return {
-      key: i,
-      ...getFromSugar(props.totalWeight, i),
-    };
-  });
-  return (
-    <div>
-      <Grid container spacing={2} justify="space-around" alignItems="center">
-        <Grid item xs={12} sm={6}>
-          <Field
-            fullWidth
-            variant="outlined"
-            id="alcolMl"
-            label="Alcol (ml)"
-            name="alcolMl"
-            defaultValue={props.alcol}
-            value={props.alcol}
-            component={Input}
-            InputProps={{
-              readOnly: true,
-              endAdornment: <InputAdornment position="end">ml</InputAdornment>,
-            }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Field
-            variant="outlined"
-            fullWidth
-            id="alcolGr"
-            label="Alcol (gr)"
-            name="alcolGr"
-            defaultValue={Math.round(props.alcol * 0.78945)}
-            value={Math.round(props.alcol * 0.78945)}
-            component={Input}
-            InputProps={{
-              readOnly: true,
-              endAdornment: <InputAdornment position="end">gr</InputAdornment>,
-            }}
-          />
-        </Grid>
-      </Grid>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Zucchero %</TableCell>
-            <TableCell>Acqua</TableCell>
-            <TableCell>Zucchero</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {amounts.map((row) => (
-            <TableRow key={row.key}>
-              <TableCell>{row.key}</TableCell>
-              <TableCell>{row.water} ml</TableCell>
-              <TableCell>{row.sugar} gr</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
-};
-
-function App() {
-  return (
-    <ThemeProvider theme={theme}>
-      <Form />
-    </ThemeProvider>
-  );
-}
 
 export default App;
