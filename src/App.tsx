@@ -1,136 +1,176 @@
-import './App.css';
-
 import * as yup from 'yup';
 
 import {
-    Card,
-    CardContent,
-    Container,
-    CssBaseline,
-    Grid,
-    InputAdornment,
-    Link,
-    List,
-    ListItem,
-    Typography
+  Button,
+  Card,
+  CardContent,
+  Container,
+  CssBaseline,
+  Grid,
+  Collapse,
+  InputAdornment,
+  Link,
+  List,
+  ListItem,
+  Paper,
+  Typography,
 } from '@material-ui/core';
-import { Field, FieldProps, Formik, FormikHelpers, getIn, useFormikContext } from 'formik';
+import {
+  Field,
+  FieldProps,
+  Formik,
+  FormikHelpers,
+  getIn,
+  useFormikContext,
+} from 'formik';
 import { Help, HelpOutline } from '@material-ui/icons';
 import React, { FC, useEffect, useState } from 'react';
 import TextField, { TextFieldProps } from '@material-ui/core/TextField';
-import { ThemeProvider, createMuiTheme, makeStyles } from '@material-ui/core/styles';
-
-import clsx from 'clsx';
+import {
+  ThemeProvider,
+  createMuiTheme,
+  makeStyles,
+} from '@material-ui/core/styles';
 import parse from 'html-react-parser';
-
+import './App.css';
 // import * as _ from "lodash";
 
-const theme = createMuiTheme({
+const lemonTheme = createMuiTheme({
   palette: {
-    primary: { main: '#1a237e' },
+    primary: {
+      main: '#396F3A',
+    },
+    secondary: { main: '#347562' },
     text: {
-      primary: '#1a237e',
+      primary: '#55A630',
+    },
+    background: {
+      default: '',
+      paper: '#ffff65',
     },
   },
 });
 
-const useStyles = makeStyles((theme) => ({
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3),
-  },
-  container: {
-    padding: '24px',
-    maxWidth: '700px',
-    color: '#1a237e',
-    [theme.breakpoints.up('sm')]: {
-      marginTop: '50px',
+const useStyles = makeStyles((theme) => {
+  return {
+    form: {
+      width: '100%', // Fix IE 11 issue.
+      marginTop: theme.spacing(3),
+      marginBottom: theme.spacing(3),
     },
-  },
-  table: {
-    marginTop: '20px',
-  },
-  inputLabel: {
-    color: theme.palette.primary.main,
-  },
-  cardLabel: {
-    fontSize: '14px',
-  },
-  cardRoot: {
-    background: 'transparent !important',
-    padding: '-2px -2px 0px',
-  },
-  cardValue: {
-    fontSize: '18px',
-  },
-  cardValueWithUnit: {
-    fontSize: '18px',
-    display: 'table-cell',
-    textAlign: 'left',
-    width: '50%',
-    paddingRight: '10px',
-  },
-  cardUnit: {
-    fontSize: '16px',
-    display: 'table-cell',
-    textAlign: 'right',
-    width: '50%',
-    paddingLeft: '10px',
-  },
-  cardTable: {
-    display: 'table',
-    width: '100%',
-  },
-  cardTable2: {
-    display: 'inline-table',
-    textAlign: 'left',
-    width: '50%',
-  },
-  cardTable0: {
-    paddingRight: '7px',
-    borderRight: `1.5px solid ${theme.palette.info.dark}`,
-  },
-  cardTable1: {
-    paddingLeft: '7px',
-  },
-  link: {
-    color: theme.palette.info.dark,
-  },
-  introTitle: {
-    marginBottom: '15px',
-    color: theme.palette.primary.dark,
-  },
-  introListItem: {},
-  introStepsTitle: {
-    marginBottom: '15px',
-    marginTop: '15px',
-    background: 'transparent !important',
-    color: theme.palette.primary.dark,
-    border: 'none',
-    outline: 'none',
-    boxShadow: 'none',
-    '&:hover': {
-      color: theme.palette.info.dark,
+    container: {
+      padding: '12px',
+      maxWidth: '700px',
+      color: lemonTheme.palette.primary.main,
+      [theme.breakpoints.up('sm')]: {
+        marginTop: theme.spacing(1),
+      },
     },
-  },
-  intoHelpIcon: {
-    '&:hover': {
-      color: theme.palette.info.dark,
+    paper: {
+      background: lemonTheme.palette.background.paper,
+      padding: '12px',
+      [theme.breakpoints.down('sm')]: {
+        padding: '10px',
+      },
     },
-  },
-  introSubtitle: {
-    paddingLeft: '10px',
-    marginBottom: '15px',
-  },
-  gridPadding: {
-    marginTop: '10px',
-    marginBottom: '10px',
-  },
-}));
+    table: {
+      marginTop: '20px',
+    },
+    inputLabel: {
+      color: lemonTheme.palette.text.primary,
+    },
+    inputAdornment: {
+      fontSize: '14px',
+      marginRight: '8px',
+      [theme.breakpoints.down('sm')]: { marginRight: '2px' },
+    },
+    inputField: {
+      color: lemonTheme.palette.primary.main,
+      padding: '0 7px',
+    },
+    cardLabel: {
+      fontSize: '14px',
+    },
+    cardRoot: {
+      background: 'transparent !important',
+    },
+    cardValue: {
+      fontSize: '16px',
+    },
+    cardValueWithUnit: {
+      fontSize: '16px',
+      display: 'table-cell',
+      textAlign: 'left',
+      width: '50%',
+      //paddingRight: '10px',
+    },
+    cardUnit: {
+      fontSize: '16px',
+      display: 'table-cell',
+      textAlign: 'right',
+      width: '50%',
+      //paddingLeft: '10px',
+    },
+    cardTable: {
+      display: 'table',
+      width: '100%',
+      marginLeft: 'auto',
+      marginRight: '0',
+    },
+    cardContent: {
+      padding: '10.5px 7px !important',
+    },
+    cardTable2: {
+      display: 'inline-table',
+      textAlign: 'left',
+      width: '50%',
+    },
+    cardTable0: {
+      paddingRight: '7px',
+      [theme.breakpoints.down('xs')]: {
+        paddingRight: '22px',
+      },
+      borderRight: `1px solid ${lemonTheme.palette.secondary.dark}`,
+    },
+    cardTable1: {
+      paddingLeft: '7px',
+      [theme.breakpoints.down('xs')]: {
+        paddingLeft: '21px',
+      },
+    },
+    introTitle: {
+      marginBottom: '15px',
+    },
+    introListItem: {},
+    introStepsTitle: {
+      background: 'transparent !important',
+      border: 'none',
+      outline: 'none',
+      boxShadow: 'none',
+      textTransform: 'none',
+      fontSize: '25px',
+      '&:hover': {
+        color: lemonTheme.palette.secondary.main,
+      },
+      padding: '0px !important',
+    },
+    introSubtitle: {
+      paddingLeft: '10px',
+      marginBottom: '15px',
+    },
+    gridPadding: {
+      marginTop: '10px',
+      marginBottom: '10px',
+    },
+  };
+});
 
-const Step: FC<{ text: string }> = (props) => {
-  return <ListItem style={{ fontSize: '16px' }}>{parse(props.text)}</ListItem>;
+const Step: FC<{ text: string; key: any }> = (props) => {
+  return (
+    <ListItem style={{ fontSize: '16px' }} key={props.key}>
+      {parse(props.text)}
+    </ListItem>
+  );
 };
 
 const Input: FC<FieldProps & TextFieldProps> = (props) => {
@@ -141,6 +181,7 @@ const Input: FC<FieldProps & TextFieldProps> = (props) => {
   return (
     <TextField
       variant="outlined"
+      margin="dense"
       error={error ?? Boolean(isTouched && errorMessage)}
       helperText={
         helperText ?? (isTouched && errorMessage ? errorMessage : undefined)
@@ -148,10 +189,16 @@ const Input: FC<FieldProps & TextFieldProps> = (props) => {
       {...rest}
       {...field}
       InputLabelProps={{
+        shrink: false,
         classes: {
           root: classes.inputLabel,
         },
       }}
+      /*InputProps={{
+        classes: {
+          root: classes.inputField,
+        },
+      }}*/
     />
   );
 };
@@ -180,20 +227,18 @@ const validationSchema = yup.object().shape({
 });
 
 const App = () => {
-  const onSubmit = (values: FormValues) => {};
   return (
     <Formik
       initialValues={{
-        peel: 120,
-        gradiation: 35,
-        sugarPerc: 23,
+        peel: 300,
+        gradiation: 40,
+        sugarPerc: 45,
       }}
       validationSchema={validationSchema}
       onSubmit={(
         values: FormValues,
         formikHelpers: FormikHelpers<FormValues>,
       ) => {
-        onSubmit(values);
         formikHelpers.setSubmitting(false);
       }}
     >
@@ -204,33 +249,41 @@ const App = () => {
 
 interface IRequirementCard {
   label: string;
-  value: number[];
-  unit?: string[];
+  value: number;
+  unit: string;
 }
 
 interface IRequirementCardContent {
+  label?: string;
   value: number;
   unit: string;
 }
 
 const RequirementCardContent: FC<IRequirementCardContent> = (props) => {
   const classes = useStyles();
-  const { value, unit } = props;
+  const { value, unit, label } = props;
   return (
-    <div className={classes.cardTable}>
-      <Typography className={classes.cardValueWithUnit} variant="h3">
+    <span className={classes.cardTable}>
+      {label && (
+        <InputAdornment
+          position="start"
+          className={classes.inputAdornment}
+          disableTypography={true}
+        >
+          {label}
+        </InputAdornment>
+      )}
+      <Typography
+        color="primary"
+        className={classes.cardValueWithUnit}
+        variant="h3"
+      >
         {value}
       </Typography>
-      <Typography
-        className={classes.cardUnit}
-        classes={{
-          root:
-            'MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary',
-        }}
-      >
+      <Typography className={classes.cardUnit} color="textSecondary">
         {unit}
       </Typography>
-    </div>
+    </span>
   );
 };
 
@@ -239,36 +292,8 @@ const RequirementCard: FC<IRequirementCard> = (props) => {
   const { label, value, unit } = props;
   return (
     <Card variant="outlined" className={classes.cardRoot}>
-      <CardContent>
-        {label && (
-          <Typography
-            className={classes.cardLabel}
-            variant="subtitle1"
-            gutterBottom
-          >
-            {label}
-          </Typography>
-        )}
-        {value.length === 1 && unit ? (
-          <RequirementCardContent value={value[0]} unit={unit[0]} />
-        ) : value.length === 2 && unit ? (
-          value.map((v, key) => (
-            <div
-              className={clsx(
-                classes.cardTable2,
-                key === 0 ? classes.cardTable0 : classes.cardTable1,
-              )}
-            >
-              <RequirementCardContent value={v} unit={unit[key]} />
-            </div>
-          ))
-        ) : (
-          value && (
-            <Typography className={classes.cardValue} variant="h3">
-              {value}
-            </Typography>
-          )
-        )}
+      <CardContent className={classes.cardContent}>
+        <RequirementCardContent value={value} unit={unit} label={label} />
       </CardContent>
     </Card>
   );
@@ -281,13 +306,13 @@ interface IRequirements {
 }
 
 const LemonForm = () => {
-  const { values, handleChange, isValid } = useFormikContext<FormValues>();
+  const { values, isValid } = useFormikContext<FormValues>();
   const [calculation, setCalculation] = useState<Calculation>();
   const [requirements, setRequirements] = useState<IRequirements>();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   const handleClick = () => {
-    setOpen(!open);
+    setTimeout(() => setOpen(!open), 200);
   };
 
   const updateRequirements = (calc: Calculation, sugarPerc: number) => {
@@ -308,216 +333,240 @@ const LemonForm = () => {
   const classes = useStyles();
   return (
     <>
-      <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <ThemeProvider theme={lemonTheme}>
         <Container component="main" maxWidth="sm" className={classes.container}>
-          <CssBaseline />
-          <Typography
-            component="h1"
-            variant="h4"
-            className={classes.introTitle}
-          >
-            LimonCalculator
-          </Typography>
-          <Typography
-            variant="subtitle1"
-            color="primary"
-            display="block"
-            className={classes.introSubtitle}
-          >
-            Calcolatore per il Limoncello/ino Scientifico di{' '}
-            <Link
-              href="http://bressanini-lescienze.blogautore.espresso.repubblica.it/2015/12/21/le-ricette-scientifiche-il-limoncello-anche-veloce/comment-page-2/"
-              className={classes.link}
-            >
-              Bessarini
-            </Link>
-            .<br />
-            Idea nata da un thread di{' '}
-            <Link
-              href="https://www.reddit.com/r/italy/comments/ed993f/aggiornamento_del_foglio_calcolatore_per_il/?utm_source=share&utm_medium=web2x&context=3"
-              className={classes.link}
-            >
-              r/italy
-            </Link>
-            , più nello specifico da questo{' '}
-            <Link
-              href="https://www.reddit.com/r/italy/comments/ed993f/aggiornamento_del_foglio_calcolatore_per_il/fbj3mbr/?utm_source=reddit&utm_medium=web2x&context=3"
-              className={classes.link}
-            >
-              commento
-            </Link>
-            .
-          </Typography>
-          <div
-            style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}
-          >
+          <Paper className={classes.paper}>
             <Typography
-              component="button"
-              variant="h5"
+              component="h1"
+              variant="h4"
+              className={classes.introTitle}
+              color="primary"
+            >
+              LimonCalculator
+            </Typography>
+            <Typography
+              variant="subtitle1"
+              color="primary"
+              display="block"
+              className={classes.introSubtitle}
+            >
+              Calcolatore per il Limoncello Scientifico di{' '}
+              <Link
+                href="http://bressanini-lescienze.blogautore.espresso.repubblica.it/2015/12/21/le-ricette-scientifiche-il-limoncello-anche-veloce/comment-page-2/"
+                color="secondary"
+              >
+                Bessarini
+              </Link>
+              .<br />
+              Idea nata da un thread di{' '}
+              <Link
+                href="https://www.reddit.com/r/italy/comments/ed993f/aggiornamento_del_foglio_calcolatore_per_il/?utm_source=share&utm_medium=web2x&context=3"
+                color="secondary"
+              >
+                r/italy
+              </Link>
+              , più nello specifico da questo{' '}
+              <Link
+                href="https://www.reddit.com/r/italy/comments/ed993f/aggiornamento_del_foglio_calcolatore_per_il/fbj3mbr/?utm_source=reddit&utm_medium=web2x&context=3"
+                color="secondary"
+              >
+                commento
+              </Link>
+              .
+            </Typography>
+            <Button
               className={classes.introStepsTitle}
               onClick={handleClick}
+              color="primary"
+              variant="text"
+              size="large"
+              disableFocusRipple={true}
+              disableElevation={true}
+              endIcon={
+                !open ? (
+                  <Help
+                    fontSize="small"
+                    onClick={handleClick}
+                    color="inherit"
+                  />
+                ) : (
+                  <HelpOutline
+                    fontSize="small"
+                    onClick={handleClick}
+                    color="inherit"
+                  />
+                )
+              }
             >
               Spiegazione
-            </Typography>
-            {!open ? (
-              <Help
-                fontSize="small"
-                onClick={handleClick}
-                className={classes.intoHelpIcon}
-              />
-            ) : (
-              <HelpOutline
-                fontSize="small"
-                onClick={handleClick}
-                className={classes.intoHelpIcon}
-              />
-            )}
-          </div>
-          {open && (
-            <Typography variant="body2" color="primary" display="block">
-              <List dense={true}>
-                {[
-                  'Strofinare i limoni con una spugna pulita',
-                  'Pelare i limoni con un pelapatate, rimuovendo con cura la parte bianca',
-                  'Inserire il peso delle bucce, la gradazione desiderata (in percentuale) e la percentuale di zucchero desiderato nei rispettivi campi',
-                ].map((v, key) => {
-                  return <Step text={v}></Step>;
-                })}
-              </List>
-            </Typography>
-          )}
-          <form noValidate className={classes.form}>
-            <Grid
-              container
-              spacing={2}
-              justify="space-around"
-              alignItems="center"
-            >
-              <Grid item xs={12} sm={4}>
-                <Field
-                  name="peel"
-                  required
-                  fullWidth
-                  id="peel"
-                  label="🍋 Bucce"
-                  value={values?.peel}
-                  onChange={handleChange}
-                  component={Input}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">gr</InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Field
-                  required
-                  fullWidth
-                  id="gradiation"
-                  label="🍸 Gradiazione desiderata"
-                  name="gradiation"
-                  value={values?.gradiation}
-                  onChange={handleChange}
-                  component={Input}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">%</InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Field
-                  required
-                  fullWidth
-                  id="sugarPerc"
-                  label="🍬 Zucchero desiderato"
-                  name="sugarPerc"
-                  value={values?.sugarPerc}
-                  onChange={handleChange}
-                  component={Input}
-                  InputProps={{
-                    type: 'number',
-                    endAdornment: (
-                      <InputAdornment position="end">%</InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </form>
-          {calculation &&
-            calculation.totalWeight &&
-            calculation.totalWeight > 0 &&
-            requirements &&
-            values &&
-            values.peel &&
-            values.gradiation &&
-            values.sugarPerc &&
-            isValid && (
-              <>
-                {open && (
-                  <Typography variant="body2" color="primary" display="block">
-                    <List dense={true}>
-                      {[
-                        "Mettere le bucce in macerazione al buio nell'alcol puro (la quantità da utilizzare è riportata qua sotto) per infusione per un periodo tra 1 e 3 giorni",
-                        'Agitare occasionalmente',
-                      ].map((v, key) => {
-                        return <Step text={v}></Step>;
-                      })}
-                    </List>
-                  </Typography>
-                )}
-                <Grid
-                  container
-                  spacing={2}
-                  justify="space-around"
-                  alignItems="center"
-                  className={classes.gridPadding}
-                >
-                  <Grid item xs={12} sm={4}>
-                    <RequirementCard
-                      label="Alcol necessario"
-                      value={[
-                        requirements.alcol,
-                        Math.round(requirements.alcol * 0.78945),
-                      ]}
-                      unit={['ml', 'gr']}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <RequirementCard
-                      label="Acqua necessaria"
-                      value={[requirements.water]}
-                      unit={['ml']}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <RequirementCard
-                      label="Zucchero necessario"
-                      value={[requirements.sugar]}
-                      unit={['gr']}
-                    />
-                  </Grid>
+            </Button>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <Typography variant="body2" color="primary" display="block">
+                <List dense={true}>
+                  {[
+                    'Strofinare i limoni con una spugna pulita',
+                    'Pelare i limoni con un pelapatate, rimuovendo con cura la parte bianca',
+                    'Inserire il peso delle bucce, la gradazione desiderata (in percentuale) e la percentuale di zucchero desiderato nei rispettivi campi',
+                  ].map((v, key) => {
+                    return <Step text={v} key={key}></Step>;
+                  })}
+                </List>
+              </Typography>
+            </Collapse>
+            <form noValidate className={classes.form}>
+              <Grid
+                container
+                spacing={2}
+                justify="space-around"
+                alignItems="center"
+              >
+                <Grid item xs={4}>
+                  <Field
+                    name="peel"
+                    fullWidth
+                    id="peel"
+                    component={Input}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment
+                          position="start"
+                          className={classes.inputAdornment}
+                          disableTypography={true}
+                        >
+                          🍋
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">g</InputAdornment>
+                      ),
+                      classes: {
+                        root: classes.inputField,
+                      },
+                    }}
+                  />
                 </Grid>
-                {open && (
-                  <Typography variant="body2" color="primary" display="block">
-                    <List dense={true}>
-                      {[
-                        "Una volta passato il periodo di infusione, preparare lo sciroppo di zucchero facendo scaldare l'acqua e unendoci lo zucchero nelle dosi riportate sopra",
-                        'Attendere che lo sciroppo raggiunga la temperatura ambiente',
-                        "Filtrare l'infusione rimuovendo tutte le bucce di 🍋",
-                        "Mescolare l'infusione con lo sciroppo di zucchero",
-                        'Imbottigliare e gustare il preparato, meglio se si attende ancora qualche giorno prima di provarlo',
-                      ].map((v, key) => {
-                        return <Step text={v}></Step>;
-                      })}
-                    </List>
-                  </Typography>
-                )}
-              </>
-            )}
+                <Grid item xs={4}>
+                  <Field
+                    fullWidth
+                    id="gradiation"
+                    name="gradiation"
+                    component={Input}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment
+                          position="start"
+                          className={classes.inputAdornment}
+                          disableTypography={true}
+                        >
+                          🍸
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">%</InputAdornment>
+                      ),
+                      classes: {
+                        root: classes.inputField,
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <Field
+                    fullWidth
+                    id="sugarPerc"
+                    name="sugarPerc"
+                    component={Input}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment
+                          className={classes.inputAdornment}
+                          disableTypography={true}
+                          position="start"
+                        >
+                          🍬
+                        </InputAdornment>
+                      ),
+                      type: 'number',
+                      endAdornment: (
+                        <InputAdornment position="end">%</InputAdornment>
+                      ),
+                      classes: {
+                        root: classes.inputField,
+                      },
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </form>
+            {calculation &&
+              calculation.totalWeight > 0 &&
+              requirements &&
+              values &&
+              values.peel &&
+              values.gradiation &&
+              values.sugarPerc &&
+              isValid && (
+                <>
+                  <Collapse in={open} timeout="auto" unmountOnExit>
+                    <Typography variant="body2" color="primary" display="block">
+                      <List dense={true}>
+                        {[
+                          `Mettere le bucce in macerazione al buio in ${requirements.alcol} ml di alcol puro per un periodo che va da 1 a 3 giorni, secondo preferenza`,
+                          'Agitare occasionalmente',
+                        ].map((v, key) => {
+                          return <Step text={v} key={key}></Step>;
+                        })}
+                      </List>
+                    </Typography>
+                  </Collapse>
+                  <Grid
+                    container
+                    spacing={2}
+                    justify="space-around"
+                    alignItems="center"
+                    className={classes.gridPadding}
+                  >
+                    <Grid item xs={4}>
+                      <RequirementCard
+                        label="🍸"
+                        value={requirements.alcol}
+                        unit={'ml'}
+                      />
+                    </Grid>
+                    <Grid item xs={4}>
+                      <RequirementCard
+                        label="💧"
+                        value={requirements.water}
+                        unit={'ml'}
+                      />
+                    </Grid>
+                    <Grid item xs={4}>
+                      <RequirementCard
+                        label="🍬"
+                        value={requirements.sugar}
+                        unit={'g'}
+                      />
+                    </Grid>
+                  </Grid>
+                  <Collapse in={open} timeout="auto" unmountOnExit>
+                    <Typography variant="body2" color="primary" display="block">
+                      <List dense={true}>
+                        {[
+                          `Una volta passato il periodo di infusione, preparare lo sciroppo di zucchero facendo scaldare ${requirements.water} ml d'acqua, unendoci ${requirements.sugar} g di zucchero e mescolando finché il liquido risulta limpido`,
+                          'Togliere dal fuoco e attendere che lo sciroppo raggiunga la temperatura ambiente',
+                          "Filtrare l'infusione rimuovendo tutte le bucce di 🍋",
+                          "Mescolare l'infusione con lo sciroppo",
+                          'Imbottigliare e gustare il preparato, meglio se si attende ancora qualche giorno prima di provarlo',
+                        ].map((v, key) => {
+                          return <Step text={v} key={key}></Step>;
+                        })}
+                      </List>
+                    </Typography>
+                  </Collapse>
+                </>
+              )}
+          </Paper>
         </Container>
       </ThemeProvider>
     </>
