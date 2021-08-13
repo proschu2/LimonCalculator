@@ -38,7 +38,7 @@ import './App.css';
 const lemonTheme = createMuiTheme({
   palette: {
     primary: {
-      main: '#396F3A',
+      main: '#55A630',
     },
     secondary: { main: '#347562' },
     text: {
@@ -46,7 +46,7 @@ const lemonTheme = createMuiTheme({
     },
     background: {
       default: '',
-      paper: '#ffff65',
+      paper: '#eeef20',
     },
   },
 });
