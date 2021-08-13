@@ -38,7 +38,7 @@ import './App.css';
 const lemonTheme = createMuiTheme({
   palette: {
     primary: {
-      main: '#396F3A',
+      main: '#55A630',
     },
     secondary: { main: '#347562' },
     text: {
@@ -46,7 +46,7 @@ const lemonTheme = createMuiTheme({
     },
     background: {
       default: '',
-      paper: '#ffff65',
+      paper: '#eeef20',
     },
   },
 });
@@ -55,8 +55,6 @@ const useStyles = makeStyles((theme) => {
   return {
     form: {
       width: '100%', // Fix IE 11 issue.
-      marginTop: theme.spacing(3),
-      marginBottom: theme.spacing(3),
     },
     container: {
       padding: '12px',
@@ -118,7 +116,7 @@ const useStyles = makeStyles((theme) => {
       marginRight: '0',
     },
     cardContent: {
-      padding: '10.5px 7px !important',
+      padding: '10px 7px !important',
     },
     cardTable2: {
       display: 'inline-table',
@@ -159,15 +157,19 @@ const useStyles = makeStyles((theme) => {
       marginBottom: '15px',
     },
     gridPadding: {
-      marginTop: '10px',
-      marginBottom: '10px',
+      marginTop: '4px',
+      marginBottom: '4px',
     },
   };
 });
 
 const Step: FC<{ text: string; key: any }> = (props) => {
   return (
-    <ListItem style={{ fontSize: '16px' }} key={props.key}>
+    <ListItem
+      style={{ fontSize: '16px', color: lemonTheme.palette.primary.main }}
+      key={props.key}
+      color="primary"
+    >
       {parse(props.text)}
     </ListItem>
   );
@@ -210,7 +212,7 @@ interface FormValues {
 }
 
 interface Calculation {
-  alcol: number;
+  alcohol: number;
   totalWeight: number;
 }
 
@@ -302,7 +304,7 @@ const RequirementCard: FC<IRequirementCard> = (props) => {
 interface IRequirements {
   water: number;
   sugar: number;
-  alcol: number;
+  alcohol: number;
 }
 
 const LemonForm = () => {
@@ -316,12 +318,12 @@ const LemonForm = () => {
   };
 
   const updateRequirements = (calc: Calculation, sugarPerc: number) => {
-    const { alcol, totalWeight } = calc;
+    const { alcohol, totalWeight } = calc;
     const { water, sugar } = getFromSugar(totalWeight, sugarPerc);
     setRequirements({
       water,
       sugar,
-      alcol,
+      alcohol,
     });
   };
   useEffect(() => {
@@ -402,17 +404,15 @@ const LemonForm = () => {
               Spiegazione
             </Button>
             <Collapse in={open} timeout="auto" unmountOnExit>
-              <Typography variant="body2" color="primary" display="block">
-                <List dense={true}>
-                  {[
-                    'Strofinare i limoni con una spugna pulita',
-                    'Pelare i limoni con un pelapatate, rimuovendo con cura la parte bianca',
-                    'Inserire il peso delle bucce, la gradazione desiderata (in percentuale) e la percentuale di zucchero desiderato nei rispettivi campi',
-                  ].map((v, key) => {
-                    return <Step text={v} key={key}></Step>;
-                  })}
-                </List>
-              </Typography>
+              <List dense={true} style={{ padding: '0px' }}>
+                {[
+                  'Strofinare i limoni con una spugna pulita',
+                  'Pelare i limoni con un pelapatate, rimuovendo con cura la parte bianca',
+                  'Inserire il peso delle bucce e le percentuali di gradazione e zucchero desiderate nei rispettivi campi',
+                ].map((v, key) => {
+                  return <Step text={v} key={key}></Step>;
+                })}
+              </List>
             </Collapse>
             <form noValidate className={classes.form}>
               <Grid
@@ -420,6 +420,7 @@ const LemonForm = () => {
                 spacing={2}
                 justify="space-around"
                 alignItems="center"
+                className={classes.gridPadding}
               >
                 <Grid item xs={4}>
                   <Field
@@ -509,16 +510,14 @@ const LemonForm = () => {
               isValid && (
                 <>
                   <Collapse in={open} timeout="auto" unmountOnExit>
-                    <Typography variant="body2" color="primary" display="block">
-                      <List dense={true}>
-                        {[
-                          `Mettere le bucce in macerazione al buio in ${requirements.alcol} ml di alcol puro per un periodo che va da 1 a 3 giorni, secondo preferenza`,
-                          'Agitare occasionalmente',
-                        ].map((v, key) => {
-                          return <Step text={v} key={key}></Step>;
-                        })}
-                      </List>
-                    </Typography>
+                    <List dense={true} style={{ padding: '0px' }}>
+                      {[
+                        `Mettere le bucce in macerazione al buio in ${requirements.alcohol} ml di alcol puro per un periodo che va da 1 a 3 giorni, secondo preferenza`,
+                        'Agitare occasionalmente',
+                      ].map((v, key) => {
+                        return <Step text={v} key={key}></Step>;
+                      })}
+                    </List>
                   </Collapse>
                   <Grid
                     container
@@ -530,7 +529,7 @@ const LemonForm = () => {
                     <Grid item xs={4}>
                       <RequirementCard
                         label="🍸"
-                        value={requirements.alcol}
+                        value={requirements.alcohol}
                         unit={'ml'}
                       />
                     </Grid>
@@ -550,19 +549,17 @@ const LemonForm = () => {
                     </Grid>
                   </Grid>
                   <Collapse in={open} timeout="auto" unmountOnExit>
-                    <Typography variant="body2" color="primary" display="block">
-                      <List dense={true}>
-                        {[
-                          `Una volta passato il periodo di infusione, preparare lo sciroppo di zucchero facendo scaldare ${requirements.water} ml d'acqua, unendoci ${requirements.sugar} g di zucchero e mescolando finché il liquido risulta limpido`,
-                          'Togliere dal fuoco e attendere che lo sciroppo raggiunga la temperatura ambiente',
-                          "Filtrare l'infusione rimuovendo tutte le bucce di 🍋",
-                          "Mescolare l'infusione con lo sciroppo",
-                          'Imbottigliare e gustare il preparato, meglio se si attende ancora qualche giorno prima di provarlo',
-                        ].map((v, key) => {
-                          return <Step text={v} key={key}></Step>;
-                        })}
-                      </List>
-                    </Typography>
+                    <List dense={true} style={{ padding: '0px' }}>
+                      {[
+                        `Una volta passato il periodo di infusione, preparare lo sciroppo di zucchero facendo scaldare ${requirements.water} ml d'acqua, unendoci ${requirements.sugar} g di zucchero e mescolando finché il liquido risulta limpido`,
+                        'Togliere dal fuoco e attendere che lo sciroppo raggiunga la temperatura ambiente',
+                        "Filtrare l'infusione rimuovendo tutte le bucce di 🍋",
+                        "Mescolare l'infusione con lo sciroppo",
+                        'Imbottigliare e gustare il preparato, meglio se si attende ancora qualche giorno prima di provarlo',
+                      ].map((v, key) => {
+                        return <Step text={v} key={key}></Step>;
+                      })}
+                    </List>
                   </Collapse>
                 </>
               )}
@@ -573,40 +570,48 @@ const LemonForm = () => {
   );
 };
 
-function getFromSugar(weight: number, sugarPercentage: number) {
+const getFromSugar = (weight: number, sugarPercentage: number) => {
   const sugar = Math.round((sugarPercentage / 100) * weight);
   const water = Math.round(weight - sugar);
   return {
     sugar,
     water,
   };
-}
+};
 
-const calculate = (values: Partial<FormValues>): Calculation => {
+export const calculate = (values: Partial<FormValues>): Calculation => {
   let { peel, gradiation } = values;
   if (!gradiation || !peel || gradiation === 0 || peel === 0) {
     return {
-      alcol: 0,
+      alcohol: 0,
       totalWeight: 0,
     };
   }
   if (gradiation >= 1) {
     gradiation /= 100;
   }
-  const alcolDensity = 0.78945;
+  const alcoholDensity = 0.78945;
+  // quantity of 💧 inside 🍋 peels
   const peelWater = 0.7 * peel;
-  const alcol = Math.round((peel * 10) / 3);
-  const alcolWaterMl = 0.04 * alcol;
-  const totalWaterMl = alcolWaterMl + peelWater;
-  const alcolPureMl = 0.96 * alcol;
-  const mixGradiation = alcolPureMl / (alcolPureMl + totalWaterMl);
-  const waterAfterMl = (1 - mixGradiation) * alcol;
-  const alcolAfterMl = alcol * mixGradiation;
-  const alcolAfterGr = alcolAfterMl * alcolDensity;
-  const sugarWaterMl = alcolAfterMl / gradiation - alcolAfterMl - waterAfterMl;
-  const totalWeight = sugarWaterMl + waterAfterMl + alcolAfterGr;
+  // for each 30g of 🍋 we need ca. 100 ml of 🍸
+  const alcohol = Math.round((peel * 10) / 3);
+  // 🍸 at 96% contains 4% of 💧
+  const alcoholWaterMl = 0.04 * alcohol;
+  // in the 🍋 + 🍸 mix, the total amount of 💧
+  const totalWaterMl = alcoholWaterMl + peelWater;
+  // the quantity of pure 🍸 is 96% of the 🍸 volume
+  const alcoholPureMl = 0.96 * alcohol;
+  // gradiation of the mix is given by the ratio of pure 🍸 over the total volume of the mix
+  const mixGradiation = alcoholPureMl / (alcoholPureMl + totalWaterMl);
+  // once we remove the peels, we can get the volume of 💧 remaining by removing the 🍸 part from the initial volume
+  const waterAfterMl = (1 - mixGradiation) * alcohol;
+  // the rest is pure 🍸
+  const alcoholAfterMl = alcohol * mixGradiation;
+  const alcoholAfterGr = alcoholAfterMl * alcoholDensity;
+  const sugarWaterMl = alcoholAfterMl / gradiation - alcohol;
+  const totalWeight = sugarWaterMl + waterAfterMl + alcoholAfterGr;
   return {
-    alcol: Math.round(alcol),
+    alcohol: Math.round(alcohol),
     totalWeight: Math.round(totalWeight),
   };
 };
