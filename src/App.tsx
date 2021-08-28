@@ -38,15 +38,15 @@ import './App.css';
 const lemonTheme = createMuiTheme({
   palette: {
     primary: {
-      main: '#55A630',
+      main: '#028174',
     },
-    secondary: { main: '#347562' },
+    secondary: { main: '#0AB68B' },
     text: {
-      primary: '#55A630',
+      primary: '#028174',
     },
     background: {
       default: '',
-      paper: '#eeef20',
+      paper: '#92de8b',
     },
   },
 });

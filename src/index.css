@@ -3,8 +3,10 @@ html {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #028174 !important;
+  /*
   background-color: #2b9348 !important;
-  /* fallback for old browsers 
+   fallback for old browsers 
     background: -webkit-linear-gradient(to right, #DED664 30%, #DED664 30%);
     /* Chrome 10-25, Safari 5.1-6 
     background: linear-gradient(to right, #DED664 30%, #DED664 30%);
