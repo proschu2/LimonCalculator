@@ -163,7 +163,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const Step: FC<{ text: string; key: any }> = (props) => {
+const Step: FC<{ text: string; key: number }> = (props) => {
   return (
     <ListItem
       style={{ fontSize: '16px', color: lemonTheme.palette.primary.main }}
@@ -217,7 +217,7 @@ interface Calculation {
 }
 
 const validationSchema = yup.object().shape({
-  peel: yup.string().required('Necessario'),
+  peel: yup.number().min(1, 'Necessario').required('Necessario'),
   gradiation: yup
     .number()
     .min(1, 'Inserisci una percentuale')
@@ -355,7 +355,7 @@ const LemonForm = () => {
             >
               Calcolatore per il Limoncello Scientifico di{' '}
               <Link
-                href="http://bressanini-lescienze.blogautore.espresso.repubblica.it/2015/12/21/le-ricette-scientifiche-il-limoncello-anche-veloce/comment-page-2/"
+                href="https://bressanini-lescienze.blogautore.espresso.repubblica.it/2015/12/21/le-ricette-scientifiche-il-limoncello-anche-veloce/comment-page-2/"
                 color="secondary"
               >
                 Bessarini
